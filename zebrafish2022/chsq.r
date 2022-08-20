@@ -1,21 +1,27 @@
-dat = read.table("pub.tsv", header = TRUE)
+figname = "fig6"
+data = read.table(paste0(figname, ".tsv"), header = TRUE)
 
 # https://sphweb.bumc.bu.edu/otlt/MPH-Modules/PH717-QuantCore/PH717-Module8-CategoricalData/PH717-Module8-CategoricalData4.html
+# https://stats.stackexchange.com/questions/81483/warning-in-r-chi-squared-approximation-may-be-incorrect
 
-# with dead fish
-all.results = c()
-for (dpa in 1:6){
-    dat.clean = dat[dat["dpa"] == dpa, 2:5] 
-    dat.clean = dat.clean[apply(dat.clean, 1, sum) > 0,]
-    all.results[[dpa]] = chisq.test(dat.clean,correct=FALSE)
+chsq = function(dat, simulated){
+    results = c()
+    results.names = c()
+    for (dpa in 1:max(dat["dpa"])){
+        # if(sum(dat["dpa"] == dpa) < 2) {next} # can't do chsq if less than 2 rows
+        dat.clean = dat[dat["dpa"] == dpa, ! colnames(dat) %in% c("phase", "dpa")] 
+        dat.clean = dat.clean[apply(dat.clean, 1, sum) > 0,] # remove lines that contain only 0's
+        if(nrow(dat.clean) < 2) {next} # can't do chsq if less than 2 rows
+        # results = append(results, list(chisq.test(dat.clean, simulate.p.value = TRUE)))
+        results[[sprintf("%d dpa", dpa)]] = list(ch = chisq.test(dat.clean, simulate.p.value = simulated), n = sum(dat.clean))
+        # results.names = c(results.names, sprintf("%d dpa", dpa))
+    }
+    # names(results) = results.names
+
+    return(results)
 }
 
-# without dead fish
-live.results = c()
-# with dead fish
-for (dpa in 1:6){
-    dat.clean = dat[dat["phase"] != 5 & dat["dpa"] == dpa, 2:5]
-    dat.clean = dat.clean[apply(dat.clean, 1, sum) > 0,]
-    dat.clean = dat.clean[]
-    live.results[[dpa]] = chisq.test(dat.clean,correct=FALSE)
-}
+all.results = chsq(data, FALSE)
+live.results = chsq(data[data["phase"] != 5,], FALSE)
+
+save.image(paste0(figname, ".Rdata"))
