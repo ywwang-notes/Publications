@@ -8,16 +8,11 @@ chsq = function(dat, simulated){
     results = c()
     results.names = c()
     for (dpa in 1:max(dat["dpa"])){
-        # if(sum(dat["dpa"] == dpa) < 2) {next} # can't do chsq if less than 2 rows
         dat.clean = dat[dat["dpa"] == dpa, ! colnames(dat) %in% c("phase", "dpa")] 
         dat.clean = dat.clean[apply(dat.clean, 1, sum) > 0,] # remove lines that contain only 0's
         if(nrow(dat.clean) < 2) {next} # can't do chsq if less than 2 rows
-        # results = append(results, list(chisq.test(dat.clean, simulate.p.value = TRUE)))
         results[[sprintf("%d dpa", dpa)]] = list(ch = chisq.test(dat.clean, simulate.p.value = simulated), n = sum(dat.clean))
-        # results.names = c(results.names, sprintf("%d dpa", dpa))
     }
-    # names(results) = results.names
-
     return(results)
 }
 
