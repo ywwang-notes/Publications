@@ -2,9 +2,8 @@ dat = read.table("pub.tsv", header = TRUE)
 
 # https://sphweb.bumc.bu.edu/otlt/MPH-Modules/PH717-QuantCore/PH717-Module8-CategoricalData/PH717-Module8-CategoricalData4.html
 
-all.results = c()
-
 # with dead fish
+all.results = c()
 for (dpa in 1:6){
     dat.clean = dat[dat["dpa"] == dpa, 2:5] 
     dat.clean = dat.clean[apply(dat.clean, 1, sum) > 0,]
