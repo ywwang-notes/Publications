@@ -25,3 +25,6 @@ live.results = chsq(data[data["phase"] != 5,], "dpa", FALSE)
 # dead.data = aggregate(dead.data[,! colnames(dead.data) %in% c("phase", "dpa")], 
 #              list(phase=dead.data$phase == 5, dpa=dead.data$dpa), sum)
 # dead.results = chsq(dead.data, "dpa", TRUE)
+
+save.image(paste0(figname, ".Rdata"))
+
